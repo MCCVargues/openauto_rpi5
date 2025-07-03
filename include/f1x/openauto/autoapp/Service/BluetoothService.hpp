@@ -45,7 +45,7 @@ public:
 private:
     using std::enable_shared_from_this<BluetoothService>::shared_from_this;
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::channel::bluetooth::BluetoothServiceChannel::Pointer channel_;
     projection::IBluetoothDevice::Pointer bluetoothDevice_;
 };

@@ -30,7 +30,7 @@ namespace service
 {
 
 SensorService::SensorService(boost::asio::io_service& ioService, aasdk::messenger::IMessenger::Pointer messenger)
-    : strand_(ioService)
+    : strand_(boost::asio::make_strand(ioService))
     , channel_(std::make_shared<aasdk::channel::sensor::SensorServiceChannel>(strand_, std::move(messenger)))
 {
 
@@ -38,7 +38,7 @@ SensorService::SensorService(boost::asio::io_service& ioService, aasdk::messenge
 
 void SensorService::start()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[SensorService] start.";
         channel_->receive(this->shared_from_this());
     });
@@ -46,7 +46,7 @@ void SensorService::start()
 
 void SensorService::stop()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[SensorService] stop.";
     });
 }

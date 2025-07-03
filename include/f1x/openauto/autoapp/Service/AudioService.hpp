@@ -53,7 +53,7 @@ public:
 protected:
     using std::enable_shared_from_this<AudioService>::shared_from_this;
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::channel::av::IAudioServiceChannel::Pointer channel_;
     projection::IAudioOutput::Pointer audioOutput_;
     int32_t session_;

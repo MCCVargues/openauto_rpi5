@@ -54,7 +54,7 @@ public:
 private:
     using std::enable_shared_from_this<InputService>::shared_from_this;
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::channel::input::InputServiceChannel::Pointer channel_;
     projection::IInputDevice::Pointer inputDevice_;
 };

@@ -34,7 +34,7 @@ App::App(boost::asio::io_service& ioService, aasdk::usb::USBWrapper& usbWrapper,
     : ioService_(ioService)
     , usbWrapper_(usbWrapper)
     , tcpWrapper_(tcpWrapper)
-    , strand_(ioService_)
+    , strand_(boost::asio::make_strand(ioService_))
     , androidAutoEntityFactory_(androidAutoEntityFactory)
     , usbHub_(std::move(usbHub))
     , connectedAccessoriesEnumerator_(std::move(connectedAccessoriesEnumerator))
@@ -45,7 +45,7 @@ App::App(boost::asio::io_service& ioService, aasdk::usb::USBWrapper& usbWrapper,
 
 void App::waitForUSBDevice()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         this->waitForDevice();
         this->enumerateDevices();
     });
@@ -53,7 +53,7 @@ void App::waitForUSBDevice()
 
 void App::start(aasdk::tcp::ITCPEndpoint::SocketPointer socket)
 {
-    strand_.dispatch([this, self = this->shared_from_this(), socket = std::move(socket)]() mutable {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this(), socket = std::move(socket)]() mutable {
         if(androidAutoEntity_ != nullptr)
         {
             tcpWrapper_.close(*socket);
@@ -82,7 +82,7 @@ void App::start(aasdk::tcp::ITCPEndpoint::SocketPointer socket)
 
 void App::stop()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         isStopped_ = true;
         connectedAccessoriesEnumerator_->cancel();
         usbHub_->cancel();
@@ -147,7 +147,7 @@ void App::waitForDevice()
 
 void App::onAndroidAutoQuit()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[App] quit.";
 
         androidAutoEntity_->stop();

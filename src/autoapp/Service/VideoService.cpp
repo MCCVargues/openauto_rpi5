@@ -29,7 +29,7 @@ namespace service
 {
 
 VideoService::VideoService(boost::asio::io_service& ioService, aasdk::messenger::IMessenger::Pointer messenger, projection::IVideoOutput::Pointer videoOutput)
-    : strand_(ioService)
+    : strand_(boost::asio::make_strand(ioService))
     , channel_(std::make_shared<aasdk::channel::av::VideoServiceChannel>(strand_, std::move(messenger)))
     , videoOutput_(std::move(videoOutput))
     , session_(-1)
@@ -39,7 +39,7 @@ VideoService::VideoService(boost::asio::io_service& ioService, aasdk::messenger:
 
 void VideoService::start()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[VideoService] start.";
         channel_->receive(this->shared_from_this());
     });
@@ -47,7 +47,7 @@ void VideoService::start()
 
 void VideoService::stop()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[VideoService] stop.";
         videoOutput_->stop();
     });
@@ -92,6 +92,13 @@ void VideoService::onAVChannelStartIndication(const aasdk::proto::messages::AVCh
     OPENAUTO_LOG(info) << "[VideoService] start indication, session: " << indication.session();
     session_ = indication.session();
 
+    channel_->receive(this->shared_from_this());
+}
+
+void VideoService::onAVChannelStopIndication(const aasdk::proto::messages::AVChannelStopIndication& indication)
+{
+    OPENAUTO_LOG(info) << "[VideoService] stop indication received";
+    
     channel_->receive(this->shared_from_this());
 }
 

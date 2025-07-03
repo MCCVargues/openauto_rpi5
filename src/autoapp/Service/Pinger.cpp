@@ -28,7 +28,7 @@ namespace service
 {
 
 Pinger::Pinger(boost::asio::io_service& ioService, time_t duration)
-    : strand_(ioService)
+    : strand_(boost::asio::make_strand(ioService))
     , timer_(ioService)
     , duration_(duration)
     , cancelled_(false)
@@ -40,7 +40,7 @@ Pinger::Pinger(boost::asio::io_service& ioService, time_t duration)
 
 void Pinger::ping(Promise::Pointer promise)
 {
-    strand_.dispatch([this, self = this->shared_from_this(), promise = std::move(promise)]() mutable {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this(), promise = std::move(promise)]() mutable {
         cancelled_ = false;
 
         if(promise_ != nullptr)
@@ -53,14 +53,14 @@ void Pinger::ping(Promise::Pointer promise)
 
             promise_ = std::move(promise);
             timer_.expires_from_now(boost::posix_time::milliseconds(duration_));
-            timer_.async_wait(strand_.wrap(std::bind(&Pinger::onTimerExceeded, this->shared_from_this(), std::placeholders::_1)));
+            timer_.async_wait(boost::asio::bind_executor(strand_, std::bind(&Pinger::onTimerExceeded, this->shared_from_this(), std::placeholders::_1)));
         }
     });
 }
 
 void Pinger::pong()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         ++pongsCount_;
     });
 }
@@ -89,7 +89,7 @@ void Pinger::onTimerExceeded(const boost::system::error_code& error)
 
 void Pinger::cancel()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         cancelled_ = true;
         timer_.cancel();
     });

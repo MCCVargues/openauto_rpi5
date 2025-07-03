@@ -32,11 +32,14 @@ namespace autoapp
 namespace projection
 {
 
-class InputDevice: public QObject, public IInputDevice, boost::noncopyable
+class InputDevice: public QObject, public IInputDevice
 {
     Q_OBJECT
 
 public:
+    InputDevice(const InputDevice&) = delete;
+    InputDevice& operator=(const InputDevice&) = delete;
+    
     InputDevice(QObject& parent, configuration::IConfiguration::Pointer configuration, const QRect& touchscreenGeometry, const QRect& videoGeometry);
 
     void start(IInputDeviceEventHandler& eventHandler) override;

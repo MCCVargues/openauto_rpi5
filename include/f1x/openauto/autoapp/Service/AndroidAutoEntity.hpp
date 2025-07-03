@@ -67,7 +67,7 @@ private:
     void schedulePing();
     void sendPing();
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::messenger::ICryptor::Pointer cryptor_;
     aasdk::transport::ITransport::Pointer transport_;
     aasdk::messenger::IMessenger::Pointer messenger_;

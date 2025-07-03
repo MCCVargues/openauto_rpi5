@@ -53,7 +53,7 @@ private:
     void onAudioInputDataReady(aasdk::common::Data data);
     void readAudioInput();
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::channel::av::AVInputServiceChannel::Pointer channel_;
     projection::IAudioInput::Pointer audioInput_;
     int32_t session_;

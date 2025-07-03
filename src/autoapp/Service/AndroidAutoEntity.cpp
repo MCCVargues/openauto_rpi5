@@ -36,7 +36,7 @@ AndroidAutoEntity::AndroidAutoEntity(boost::asio::io_service& ioService,
                                      configuration::IConfiguration::Pointer configuration,
                                      ServiceList serviceList,
                                      IPinger::Pointer pinger)
-    : strand_(ioService)
+    : strand_(boost::asio::make_strand(ioService))
     , cryptor_(std::move(cryptor))
     , transport_(std::move(transport))
     , messenger_(std::move(messenger))
@@ -55,7 +55,7 @@ AndroidAutoEntity::~AndroidAutoEntity()
 
 void AndroidAutoEntity::start(IAndroidAutoEntityEventHandler& eventHandler)
 {
-    strand_.dispatch([this, self = this->shared_from_this(), eventHandler = &eventHandler]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this(), eventHandler = &eventHandler]() {
         OPENAUTO_LOG(info) << "[AndroidAutoEntity] start.";
 
         eventHandler_ = eventHandler;
@@ -71,7 +71,7 @@ void AndroidAutoEntity::start(IAndroidAutoEntityEventHandler& eventHandler)
 
 void AndroidAutoEntity::stop()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[AndroidAutoEntity] stop.";
 
         eventHandler_ = nullptr;

@@ -20,7 +20,6 @@
 
 #include <QMediaPlayer>
 #include <QVideoWidget>
-#include <boost/noncopyable.hpp>
 #include <f1x/openauto/autoapp/Projection/VideoOutput.hpp>
 #include <f1x/openauto/autoapp/Projection/SequentialBuffer.hpp>
 
@@ -33,12 +32,16 @@ namespace autoapp
 namespace projection
 {
 
-class QtVideoOutput: public QObject, public VideoOutput, boost::noncopyable
+class QtVideoOutput: public QObject, public VideoOutput
 {
     Q_OBJECT
 
 public:
+    QtVideoOutput(const QtVideoOutput&) = delete;
+    QtVideoOutput& operator=(const QtVideoOutput&) = delete;
+    
     QtVideoOutput(configuration::IConfiguration::Pointer configuration);
+
     bool open() override;
     bool init() override;
     void write(uint64_t timestamp, const aasdk::common::DataConstBuffer& buffer) override;

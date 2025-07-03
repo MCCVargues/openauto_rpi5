@@ -43,7 +43,7 @@ private:
 
     void onTimerExceeded(const boost::system::error_code& error);
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     boost::asio::deadline_timer timer_;
     time_t duration_;
     bool cancelled_;

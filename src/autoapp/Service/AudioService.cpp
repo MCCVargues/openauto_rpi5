@@ -29,7 +29,7 @@ namespace service
 {
 
 AudioService::AudioService(boost::asio::io_service& ioService, aasdk::channel::av::IAudioServiceChannel::Pointer channel, projection::IAudioOutput::Pointer audioOutput)
-    : strand_(ioService)
+    : strand_(boost::asio::make_strand(ioService))
     , channel_(std::move(channel))
     , audioOutput_(std::move(audioOutput))
     , session_(-1)
@@ -39,7 +39,7 @@ AudioService::AudioService(boost::asio::io_service& ioService, aasdk::channel::a
 
 void AudioService::start()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[AudioService] start, channel: " << aasdk::messenger::channelIdToString(channel_->getId());
         channel_->receive(this->shared_from_this());
     });
@@ -47,7 +47,7 @@ void AudioService::start()
 
 void AudioService::stop()
 {
-    strand_.dispatch([this, self = this->shared_from_this()]() {
+    boost::asio::dispatch(strand_, [this, self = this->shared_from_this()]() {
         OPENAUTO_LOG(info) << "[AudioService] stop, channel: " << aasdk::messenger::channelIdToString(channel_->getId());
         audioOutput_->stop();
     });

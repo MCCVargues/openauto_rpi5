@@ -56,7 +56,7 @@ private:
     boost::asio::io_service& ioService_;
     aasdk::usb::USBWrapper& usbWrapper_;
     aasdk::tcp::ITCPWrapper& tcpWrapper_;
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     service::IAndroidAutoEntityFactory& androidAutoEntityFactory_;
     aasdk::usb::IUSBHub::Pointer usbHub_;
     aasdk::usb::IConnectedAccessoriesEnumerator::Pointer connectedAccessoriesEnumerator_;

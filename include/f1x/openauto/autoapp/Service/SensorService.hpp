@@ -47,7 +47,7 @@ private:
     void sendDrivingStatusUnrestricted();
     void sendNightData();
 
-    boost::asio::io_service::strand strand_;
+    boost::asio::strand<boost::asio::io_context::executor_type> strand_;
     aasdk::channel::sensor::SensorServiceChannel::Pointer channel_;
 };
 

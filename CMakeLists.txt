@@ -34,6 +34,12 @@ find_package(Protobuf REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(rtaudio REQUIRED)
 
+# Set AASDK paths manually - main lib in /usr/local, proto lib in build dir
+set(AASDK_INCLUDE_DIRS "/usr/local/include")
+set(AASDK_LIBRARIES "/usr/local/lib/libaasdk.so")
+set(AASDK_PROTO_INCLUDE_DIRS "/usr/local/include")
+set(AASDK_PROTO_LIBRARIES "/home/mccv/aasdk_rpi5/lib/libaasdk_proto.so")
+
 if(WIN32)
     set(WINSOCK2_LIBRARIES "ws2_32")
 endif(WIN32)
