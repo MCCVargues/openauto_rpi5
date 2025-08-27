@@ -1,3 +1,5 @@
+## In this fork we are trying to get OpenAuto to run on an rpi5. It is very much still work in progress. In it's current state it compiles and runs, but fails to properly handle the audio and video stream from the phone.
+## Original readme follows
 
 # OpenAuto
 
